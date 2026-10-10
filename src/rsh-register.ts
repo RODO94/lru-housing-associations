@@ -2,6 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { fetchGovUKTest, fetchGovUKURL } from "./fetching/gov-uk-content.ts";
+import { normaliseRshProvider } from "./normalising/rsh-provider.ts";
 import { writeRecordsToJson } from "./parsing/csv_parser.ts";
 import { parseXlsxFile } from "./parsing/xlsx_parser.ts";
 import {
@@ -44,14 +45,7 @@ export const downloadAndSaveRshRegister = async (): Promise<
     await parseXlsxFile(path.join(directory, fileName)),
   );
 
-  const providers: SavedRshProvider[] = rows.map((row) => ({
-    orgName: row["Organisation name"],
-    registrationNumber: row["Registration number"],
-    registrationDate: row["Registration date"],
-    designation: row.Designation,
-    corporateForm: row["Corporate form"],
-    notes: row.Notes,
-  }));
+  const providers = rows.map((row) => normaliseRshProvider(row));
 
   await writeRecordsToJson(providers, toSavedRegisterPath(asAt));
   return providers;

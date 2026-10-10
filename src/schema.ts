@@ -25,12 +25,23 @@ export const rshProviderRowSchema = z.object({
 
 export const rshProviderArraySchema = z.array(rshProviderRowSchema);
 
+export type RshProviderRow = z.infer<typeof rshProviderRowSchema>;
+
+/** Designation after normalisation; matches `Entity.designation` in the plan. */
+export const rshDesignationSchema = z.enum([
+  "non-profit",
+  "for-profit",
+  "local-authority",
+]);
+
+export type RshDesignation = z.infer<typeof rshDesignationSchema>;
+
 /** A provider as saved to `data/json/rsh_providers_<as_at>.json`. */
 export const savedRshProviderSchema = z.object({
   orgName: z.string().min(1),
   registrationNumber: z.string().min(1),
   registrationDate: z.iso.date(),
-  designation: rshProviderRowSchema.shape.Designation,
+  designation: rshDesignationSchema,
   corporateForm: z.string(),
   notes: z.string(),
 });
