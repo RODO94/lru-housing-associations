@@ -49,3 +49,11 @@ export const savedRshProviderSchema = z.object({
 export const savedRshProviderArraySchema = z.array(savedRshProviderSchema);
 
 export type SavedRshProvider = z.infer<typeof savedRshProviderSchema>;
+
+/** A provider with plan 01 step 5 scope flags, as saved to `rsh_providers_<as_at>_modified.json`. */
+export const scopedRshProviderSchema = savedRshProviderSchema.extend({
+  inScope: z.boolean(),
+  isForProfit: z.boolean(),
+});
+
+export type ScopedRshProvider = z.infer<typeof scopedRshProviderSchema>;

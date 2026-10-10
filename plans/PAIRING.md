@@ -40,3 +40,7 @@ The fetch, parse, map and save pipeline moved to `downloadAndSaveRshRegister()`.
 ---
 ### ✅ Handed back · `src/normalising/rsh-provider.ts`, `src/schema.ts`, `src/rsh-register.ts`
 Plan step 3. `normaliseRshNumber` trims and uppercases, and the result is always a string. `normaliseDesignation` maps `Non-profit`/`Profit`/`Local authority` to `non-profit`/`for-profit`/`local-authority` through a `satisfies Record<…>` table, so adding a new raw value fails the typecheck. `normaliseRshProvider` replaces the inline map in `downloadAndSaveRshRegister`. `savedRshProviderSchema.designation` now uses the new `rshDesignationSchema`. I regenerated `rsh_providers_2026-09-17.json` from the raw xlsx, and the only change is designation (1253/232/92). 4 new tests pass. Names and corporate form are left exactly as RSH publishes them, and two names contain double spaces. Still open: `src/lib/ids.ts` from the overview conventions, and there's no command that re-parses from raw without hitting the network.
+
+---
+### ✅ Handed back · duplicates, scope, modified output
+`findDuplicateRegistrationNumbers` / `assertUniqueRegistrationNumbers` (`src/validating/`) run on both the refresh and the load paths. `scopeRshProvider` (`src/scoping/`) adds `inScope` and `isForProfit`. Both loaders now return `{ asAt, providers }`. `saveModifiedRshRegister` writes `data/json/rsh_providers_<as_at>_modified.json`. Result: 1,577 providers, 1,345 in scope, 92 of them for-profit, 232 local authorities out. 14/14 tests pass.
