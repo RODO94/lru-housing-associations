@@ -1,33 +1,19 @@
 import { parseArgs } from "node:util";
 
-import { fetchGovUKTest, fetchGovUKURL } from "./fetching/gov-uk-content.ts";
-import { govUKPublicationSchema } from "./schema.ts";
+import {
+  downloadAndSaveRshRegister,
+  loadSavedRshRegister,
+} from "./rsh-register.ts";
 
 const { values } = parseArgs({
   options: {
-    name: { type: "string", short: "n", default: "world" },
+    refresh: { type: "boolean", default: false },
+    "as-at": { type: "string" },
   },
 });
 
-console.log(`Hello, ${values.name}!`);
+const providers = values.refresh
+  ? await downloadAndSaveRshRegister()
+  : await loadSavedRshRegister(values["as-at"]);
 
-const result = await fetchGovUKTest("registered");
-
-if (result) {
-  const jsonResponse = await result.json();
-
-  const publication = govUKPublicationSchema.safeParse(jsonResponse);
-
-  if (publication.error) {
-    console.error("Issue with zod parsing");
-    console.error(publication.error);
-  } else {
-    const [file] = publication.data.details.attachments.filter(
-      (attachment) => attachment.attachment_type === "file",
-    );
-
-    if (file) {
-      await fetchGovUKURL(file);
-    }
-  }
-}
+console.log(`Loaded ${providers.length} registered providers`);

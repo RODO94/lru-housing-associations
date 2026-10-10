@@ -16,3 +16,23 @@ Added `import { z } from "zod"` and, inside the `if (result)` block, `govUKAttac
 ---
 ### ✅ Handed back · `src/parsing/csv_parser.ts`, `csv-parse@7.0.3`
 `parseCsvFile(path, { headerLine })` streams a CSV into `Record<string,string>[]`, and `writeRecordsToJson(records, outPath)` writes it out. I smoke-tested it on SDR File 04 with `headerLine: 4`: 10,263 rows. Note this is Phase 02 tooling. The Phase 01 register is xlsx, so it still needs a spreadsheet parser.
+
+---
+### ✅ Handed back · `src/parsing/xlsx_parser.ts`, `exceljs@4.4.0`
+`parseXlsxFile(path, { sheetName, headerLine })` turns a worksheet into `Record<string,string>[]`, the same shape as `parseCsvFile`. It reads the first visible sheet by default, which skips the RSH file's `veryHidden` sheet, and turns dates into ISO strings. On the 17 Sep 2026 register it returns 1,577 rows. JSON output reuses `writeRecordsToJson` from `csv_parser.ts`.
+
+---
+### ✅ Handed back · `saveXlsxAsJson` in `src/parsing/xlsx_parser.ts`
+`saveXlsxAsJson(filePath, outPath, options)` parses the sheet, writes JSON through `writeRecordsToJson`, and returns the records. Tested on the RSH register: 1,577 rows.
+
+---
+### ✅ Handed back · `rshProviderRowSchema` in `src/schema.ts`
+It validates raw spreadsheet rows: name and number non-empty, the date in ISO format, and `Designation` limited to the three raw values (`Non-profit`, `Profit`, `Local authority`). All 1,577 live rows pass, and all registration numbers are unique. It doesn't normalise anything; that's still plan step 3.
+
+---
+### ✅ Handed back · registry check in `src/index.ts`
+The check now calls `rshProviderRowsSchema.safeParse(...)`, the array schema from `schema.ts`, instead of the single-row schema, and the import is updated to match.
+
+---
+### ✅ Handed back · `src/index.ts`, `src/rsh-register.ts`, `src/schema.ts`
+The fetch, parse, map and save pipeline moved to `downloadAndSaveRshRegister()`. `loadSavedRshRegister(asAt?)` reads `data/json/rsh_providers_<as_at>.json`, picking the newest when no date is given, and validates it against the new `savedRshProviderArraySchema`. `index.ts` loads from disk by default, fetches with `--refresh`, and takes a date with `--as-at`. I tested all three, and the `writeRecordsToJson` call is now awaited. Still open: `data/json/` vs the plan's `data/interim/` and CSV output, and the leftover `src/helpers.ts`.

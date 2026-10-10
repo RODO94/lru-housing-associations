@@ -60,6 +60,8 @@ export const fetchGovUKURL = async ({ url, title }: GovUKAttachment) => {
   const rawDir = path.join("data", "raw", "rsh", asAt);
   const fileName = path.basename(new URL(url).pathname);
 
+  console.log("As At", asAt);
+
   await mkdir(rawDir, { recursive: true });
   await writeFile(path.join(rawDir, fileName), bytes);
   await writeFile(
@@ -76,4 +78,5 @@ export const fetchGovUKURL = async ({ url, title }: GovUKAttachment) => {
       2,
     ),
   );
+  return { directory: rawDir, fileName: fileName, asAt };
 };

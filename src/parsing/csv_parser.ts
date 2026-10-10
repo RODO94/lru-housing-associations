@@ -41,7 +41,7 @@ export const parseCsvFile = async (
 
 /** Writes records to `outPath` as pretty-printed JSON, creating folders as needed. */
 export const writeRecordsToJson = async (
-  records: CsvRecord[],
+  records: object[],
   outPath: string,
 ): Promise<void> => {
   await mkdir(path.dirname(outPath), { recursive: true });
