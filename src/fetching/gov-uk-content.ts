@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { z } from "zod";
 
-import type { govUKAttachmentSchema } from "../schema.ts";
+import type { govUKAttachmentSchema } from "./gov-uk-schema.ts";
 import { parseAsAtFromTitle } from "./as-at.ts";
 
 type GovUKAttachment = z.infer<typeof govUKAttachmentSchema>;

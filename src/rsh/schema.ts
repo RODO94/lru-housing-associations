@@ -1,18 +1,5 @@
 import z from "zod";
 
-export const govUKAttachmentSchema = z.object({
-  title: z.string(),
-  url: z.string(),
-  attachment_type: z.string(),
-  content_type: z.string().nullish(),
-});
-
-export const govUKPublicationSchema = z.object({
-  details: z.object({
-    attachments: z.array(govUKAttachmentSchema),
-  }),
-});
-
 /** One row of the RSH "List of registered providers" spreadsheet, as parsed. */
 export const rshProviderRowSchema = z.object({
   "Organisation name": z.string().min(1),
@@ -50,7 +37,7 @@ export const savedRshProviderArraySchema = z.array(savedRshProviderSchema);
 
 export type SavedRshProvider = z.infer<typeof savedRshProviderSchema>;
 
-/** A provider with plan 01 step 5 scope flags, as saved to `rsh_providers_<as_at>_modified.json`. */
+/** A provider with plan 01 step 5 scope flags, as saved to `rsh_providers_<as_at>_scoped.json`. */
 export const scopedRshProviderSchema = savedRshProviderSchema.extend({
   inScope: z.boolean(),
   isForProfit: z.boolean(),

@@ -1,4 +1,4 @@
-import type { SavedRshProvider, ScopedRshProvider } from "../schema.ts";
+import type { SavedRshProvider, ScopedRshProvider } from "../rsh/schema.ts";
 
 /**
  * Applies plan 01, step 5. Local authorities are out of scope; for-profit

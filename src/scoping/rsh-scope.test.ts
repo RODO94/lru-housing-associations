@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { RshDesignation, SavedRshProvider } from "../schema.ts";
+import type { RshDesignation, SavedRshProvider } from "../rsh/schema.ts";
 import { scopeRshProvider } from "./rsh-scope.ts";
 
 const providerWith = (designation: RshDesignation): SavedRshProvider => ({

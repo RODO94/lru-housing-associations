@@ -44,3 +44,29 @@ Plan step 3. `normaliseRshNumber` trims and uppercases, and the result is always
 ---
 ### ✅ Handed back · duplicates, scope, modified output
 `findDuplicateRegistrationNumbers` / `assertUniqueRegistrationNumbers` (`src/validating/`) run on both the refresh and the load paths. `scopeRshProvider` (`src/scoping/`) adds `inScope` and `isForProfit`. Both loaders now return `{ asAt, providers }`. `saveModifiedRshRegister` writes `data/json/rsh_providers_<as_at>_modified.json`. Result: 1,577 providers, 1,345 in scope, 92 of them for-profit, 232 local authorities out. 14/14 tests pass.
+
+---
+### ✅ Handed back · `_modified` → `_scoped`
+Renamed the output file to `rsh_providers_<as_at>_scoped.json`, with `toScopedRegisterPath` and `saveScopedRshRegister` to match. Removed the old `_modified.json`, which was tracked, so it shows as a deletion.
+
+---
+### 18:10 · `src/types.ts`
+
+**Force** — *Co-location and Domain Structure*: "Files should be co-located by domain, not separated by type… Structure is not neutral." `types.ts` is named for a file type, and it holds a runtime SDR config (`SDR_FILE_SUFFIXES`) as well as types. The same pattern already runs through `schema.ts`, `parsing/`, `fetching/`, `validating/` and `scoping/`, so this is now how the repo is organised, not a one-off.
+
+```ts
+export const SDR_FILE_SUFFIXES = [ … ] as const; // SDR domain, filed under "types"
+```
+The question is whether the force still holds for this repo or the layout should follow it (e.g. `rsh/`, `sdr/`). That is worth settling before Phase 02 adds a second domain to every folder.
+
+---
+### ✅ Handed back · header check in `parseCsvFile`
+`assertUsableHeaders` runs inside csv-parse's `columns` callback and throws on empty or repeated header names. The error names the line, the file and the bad columns, and suggests checking `headerLine`. On the real File 04, the default `headerLine` now throws, and `headerLine: 4` gives 10,263 rows. There are 5 new tests and 19/19 pass.
+
+---
+### ✅ Handed back · `sdrStockByLaRowSchema` in `src/schema.ts`
+Added `SDR_STOCK_BY_LA_COUNT_HEADERS` (27 raw count headers, 2025 config) and `sdrStockByLaRowSchema`, a `strictObject` where counts must be `[x]` or whole numbers and `Size of organisation` is `Large`/`Small`, plus the array schema and row type. The camelCase helper was dropped at your request. All 10,263 rows of File 04 pass, and an extra column is rejected. Your File 04 copy now has the header on line 1, so the preamble has been stripped from the raw file.
+
+---
+### ✅ Handed back · schema split
+`src/schema.ts` is split into `src/rsh/schema.ts`, `src/sdr/schema.ts` and `src/fetching/gov-uk-schema.ts`. `src/types.ts` moved to `src/sdr/types.ts`. Imports are updated, 19/19 tests pass, and the run is unchanged. The only typecheck error is your unused `parsedSdrStock` (`index.ts:34`).

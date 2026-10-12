@@ -2,16 +2,16 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { fetchGovUKTest, fetchGovUKURL } from "./fetching/gov-uk-content.ts";
+import { govUKPublicationSchema } from "./fetching/gov-uk-schema.ts";
 import { normaliseRshProvider } from "./normalising/rsh-provider.ts";
 import { writeRecordsToJson } from "./parsing/csv_parser.ts";
 import { parseXlsxFile } from "./parsing/xlsx_parser.ts";
 import {
-  govUKPublicationSchema,
   rshProviderArraySchema,
   savedRshProviderArraySchema,
   type SavedRshProvider,
   type ScopedRshProvider,
-} from "./schema.ts";
+} from "./rsh/schema.ts";
 import { assertUniqueRegistrationNumbers } from "./validating/rsh-duplicates.ts";
 
 const SAVED_REGISTER_DIR = path.join("data", "json");
@@ -20,8 +20,8 @@ const SAVED_REGISTER_FILE = /^rsh_providers_(\d{4}-\d{2}-\d{2})\.json$/;
 const toSavedRegisterPath = (asAt: string) =>
   path.join(SAVED_REGISTER_DIR, `rsh_providers_${asAt}.json`);
 
-const toModifiedRegisterPath = (asAt: string) =>
-  path.join(SAVED_REGISTER_DIR, `rsh_providers_${asAt}_modified.json`);
+const toScopedRegisterPath = (asAt: string) =>
+  path.join(SAVED_REGISTER_DIR, `rsh_providers_${asAt}_scoped.json`);
 
 export type LoadedRshRegister = {
   asAt: string;
@@ -94,12 +94,12 @@ export const loadSavedRshRegister = async (
   return { asAt, providers };
 };
 
-/** Writes scoped providers to `data/json/rsh_providers_<as_at>_modified.json`. */
-export const saveModifiedRshRegister = async (
+/** Writes scoped providers to `data/json/rsh_providers_<as_at>_scoped.json`. */
+export const saveScopedRshRegister = async (
   asAt: string,
   providers: ScopedRshProvider[],
 ): Promise<string> => {
-  const outPath = toModifiedRegisterPath(asAt);
+  const outPath = toScopedRegisterPath(asAt);
   await writeRecordsToJson(providers, outPath);
   return outPath;
 };

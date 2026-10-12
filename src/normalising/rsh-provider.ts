@@ -1,4 +1,4 @@
-import type { RshDesignation, RshProviderRow, SavedRshProvider } from "../schema.ts";
+import type { RshDesignation, RshProviderRow, SavedRshProvider } from "../rsh/schema.ts";
 
 /**
  * RSH numbers mix letter prefixes and plain digits (`L4240`, `LH0391`, `4758`).
